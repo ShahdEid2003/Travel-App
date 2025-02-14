@@ -19,8 +19,9 @@ Make sure you have the following installed:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/travel-app.git
-   cd travel-app
+   git clone git clone https://github.com/ShahdEid2003/Travel-App.git
+
+   cd Travel-App
 
 2.Install dependencies:
     npm install
