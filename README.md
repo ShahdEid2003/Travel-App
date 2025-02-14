@@ -4,14 +4,6 @@
 
 The **Travel App** is part of the **Front-End Developer (FEND) Capstone** project. The application allows users to plan trips by entering their destination, the start and end dates, and get useful information like weather data and destination images using multiple third-party APIs. Users can add multiple destinations to the same trip and even get weather forecasts and trip countdowns.
 
-## Features
-
-- **Trip Planning**: Users can input their travel details, including the destination and trip dates.
-- **Weather Data**: Get the current weather for the selected destination using the **Weatherbit API**.
-- **Images**: Fetch relevant images of the destination using the **Pixabay API**.
-- **Countdown Timer**: Display a countdown until the trip begins.
-- **Multiple Destinations**: Add multiple destinations to the same trip.
-- **Offline Functionality**: The app includes service workers for offline capabilities.
 
 ## Installation
 
@@ -47,7 +39,7 @@ PIXABAY_API_KEY=your_pixabay_api_key
 
 5. To build for production (optimize and minify the files):
     npm run build
-    
+
 6. Run tests:
     npm run test
 
