@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../server/server'); // تأكد من أن المسار صحيح
+const app = require('../server/server'); 
 
 describe("API Tests", () => {
     test("GET /getTrips should return status 200", async () => {
