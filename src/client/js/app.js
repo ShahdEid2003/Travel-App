@@ -1,68 +1,50 @@
-const geoNamesURL = 'http://api.geonames.org/searchJSON?q=';
-const weatherbitURL = 'https://api.weatherbit.io/v2.0/forecast/daily?';
-const pixabayURL = 'https://pixabay.com/api/?';
+const API_URLS = {
+    geonames: "http://localhost:8081/location",
+    weatherbit: "http://localhost:8081/weather",
+    pixabay: "http://localhost:8081/image"
+};
 
-const geoNamesKey = 'YOUR_GEONAMES_USERNAME';
-const weatherbitKey = 'YOUR_WEATHERBIT_KEY';
-const pixabayKey = 'YOUR_PIXABAY_KEY';
+let tripData = {
+    location: "",
+    startDate: "",
+    endDate: "",
+    weather: "",
+    image: ""
+};
 
-const handleSubmit = async (event) => {
-    event.preventDefault();
+export const handleAddTrip = async () => {
+    const location = document.getElementById("location").value;
+    const startDate = document.getElementById("start-date").value;
+    const endDate = document.getElementById("end-date").value;
 
-    const location = document.getElementById('location').value;
     
-    if (!location) {
-        alert('Please enter a location');
-        return;
-    }
+    const geoRes = await fetch(`${API_URLS.geonames}?city=${location}`);
+    const geoData = await geoRes.json();
+    if (!geoData.geonames.length) return alert("Location not found");
 
-    try {
-        const geoData = await fetch(`${geoNamesURL}${location}&maxRows=1&username=${geoNamesKey}`);
-        const geoResult = await geoData.json();
-        if (geoResult.geonames.length === 0) {
-            alert('Location not found');
-            return;
-        }
-        
-        const { lat, lng, countryName } = geoResult.geonames[0];
+    const { lat, lng } = geoData.geonames[0];
 
-        const weatherData = await fetch(`${weatherbitURL}lat=${lat}&lon=${lng}&key=${weatherbitKey}`);
-        const weatherResult = await weatherData.json();
-        const forecast = weatherResult.data[0];
+    
+    const weatherRes = await fetch(`${API_URLS.weatherbit}?lat=${lat}&lon=${lng}`);
+    const weatherData = await weatherRes.json();
+    tripData.weather = weatherData.data[0].weather.description;
 
-        const imageData = await fetch(`${pixabayURL}key=${pixabayKey}&q=${location}&image_type=photo`);
-        const imageResult = await imageData.json();
-        const imageUrl = imageResult.hits.length > 0 ? imageResult.hits[0].webformatURL : 'default-image.jpg';
+  
+    const imageRes = await fetch(`${API_URLS.pixabay}?city=${location}`);
+    const imageData = await imageRes.json();
+    tripData.image = imageData.hits.length ? imageData.hits[0].webformatURL : "default.jpg";
 
-        const tripData = {
-            location,
-            countryName,
-            forecast: forecast.weather.description,
-            temp: forecast.temp,
-            imageUrl,
-        };
+   
+    tripData.location = location;
+    tripData.startDate = startDate;
+    tripData.endDate = endDate;
 
-        await fetch('/addTrip', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(tripData),
-        });
+  
+    await fetch("http://localhost:8081/addTrip", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(tripData)
+    });
 
-        updateUI();
-    } catch (error) {
-        console.error('Error:', error);
-    }
+    alert("Trip added successfully!");
 };
-
-const updateUI = async () => {
-    const res = await fetch('/getTrip');
-    const trip = await res.json();
-
-    document.getElementById('trip-info').innerHTML = `
-        <h2>Your Trip to ${trip.location}, ${trip.countryName}</h2>
-        <p>Weather: ${trip.forecast} - ${trip.temp}°C</p>
-        <img src="${trip.imageUrl}" alt="${trip.location}">
-    `;
-};
-
-export { handleSubmit };
